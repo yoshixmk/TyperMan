@@ -110,28 +110,20 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		if(collison()) {
 			endGame();
 		}
-		if(difficulty < 6) {
-			if(currentTime%40==0) {
-				difficulty++;
-				makeNewWord();
-			}
-		} else if(difficulty < 12) {
-			if(currentTime%30==0) {
-				difficulty++;
-				makeNewWord();
-			}
-		} else if(difficulty < 19) {
-			if(currentTime%25==0) {
-				difficulty++;
-				makeNewWord();
-			}
-		} else {
-			if(currentTime%20==0) {
-				makeNewWord();
-			}
-		}
+		adjustDifficulty();
 	}
 	
+	private void adjustDifficulty() {
+		int wordFrequency = 40 - (difficulty*2)/5+1;
+		if(wordFrequency < 4) {
+			wordFrequency = 4;
+		}
+		if(currentTime % wordFrequency == 0) {
+			difficulty++;
+			makeNewWord();
+		}
+	}
+
 	private void makeNewWord() {
 			String randomWord = getRandomWord();
 			FallingWord newWord = new FallingWord(randomWord, 3);
