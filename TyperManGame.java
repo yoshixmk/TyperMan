@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -37,15 +39,18 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 			}
 			
 		});
-		currentString.setSize(400, 20);
-		currentString.setLocation(0, 352);
+		currentString.setSize(400, 30);
+		currentString.setLocation(0, 342);
 		currentString.setBackground(Color.BLUE);
 		currentString.setEditable(true);
+		currentString.setForeground(Color.white);
+		currentString.setFont(currentString.getFont().deriveFont(20f)); 
 		
 		pointBox = new JTextArea("");
 		pointBox.setEditable(false);
 		pointBox.setSize(60,30);
-		pointBox.setBackground(Color.GREEN);
+		pointBox.setBackground(Color.BLACK);
+		pointBox.setForeground(Color.white);
 		pointBox.setLocation(150, 10);
 		
 		add(pointBox);
@@ -116,12 +121,12 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 				makeNewWord();
 			}
 		} else if(difficulty < 19) {
-			if(currentTime%20==0) {
+			if(currentTime%25==0) {
 				difficulty++;
 				makeNewWord();
 			}
 		} else {
-			if(currentTime%10==0) {
+			if(currentTime%20==0) {
 				makeNewWord();
 			}
 		}
@@ -153,7 +158,7 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		java.util.Iterator<FallingWord> it = wordsOnBoard.iterator();
 		while(it.hasNext()) {
 			FallingWord current = it.next();
-			current.moveDown();
+			current.updateBox();
 		}
 		updateUI();
 	}
@@ -221,15 +226,22 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 			return word.hashCode();
 		}
 		
-		public void moveDown() {
+		public void updateBox() {
 			yLoc = yLoc + boxVel;
 			box.setLocation(xLoc, yLoc);
+			if(yLoc>235) {
+				box.setForeground(Color.white);
+				box.setBackground(Color.red);
+			} else if(yLoc>110) {
+				box.setBackground(Color.yellow);
+			}
 		}
 		
 		public void createBox() {
 			box = new JTextField(word);
 			box.setLocation(xLoc, yLoc);
-			box.setSize(9*word.length(), 30);
+			box.setSize(8*word.length()+10, 30);
+			box.setBackground(Color.GREEN);
 			add(box);
 		}
 	}
