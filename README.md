@@ -7,6 +7,10 @@ needed: a clean difficulty system
         prettier UI
         a game over screen
         
-future optional updates: adding jpeg images to the UI
-                         adding a pause button
-                         adding a difficulty selector
+future updates: adding jpeg images to the UI
+                adding a pause button
+                adding a difficulty selector
+                
+                
+                
+![Alt Text](https://github.com/corykacal/Boggle-Solver/blob/master/solving.gif?raw=true)
