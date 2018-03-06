@@ -13,4 +13,4 @@ future updates: adding jpeg images to the UI
                 
                 
                 
-![Alt Text](https://github.com/corykacal/Boggle-Solver/blob/master/solving.gif?raw=true)
+![Alt Text](https://github.com/corykacal/TyperMan/blob/master/typerman.gif?raw=true)
