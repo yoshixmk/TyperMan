@@ -3,12 +3,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Dictionary {
+public class ZhJpDictionary {
 
     public static ArrayList<ZhJpWordItem> getWords(String file) throws FileNotFoundException {
 
         Scanner input =  new Scanner(new File(file), "UTF-8");
-       
+
         ArrayList<ZhJpWordItem> words = new ArrayList<>();
         while(input.hasNext()) {
             String[] splitedWords = input.nextLine().split(",");

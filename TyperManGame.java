@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 import javax.swing.JPanel;
@@ -15,19 +17,19 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 
 	private static final long serialVersionUID = 1L;
 
-	JTextField currentString;
-	JTextArea pointBox;
-	ArrayList<ZhJpWordItem> bank;
-	ArrayList<FallingWord> wordsOnBoard;
+	private JTextField currentString;
+	private JTextArea pointBox;
+	private ArrayList<ZhJpWordItem> bank;
+	private ArrayList<FallingWord> wordsOnBoard;
 	private int points;
 	private Timer time;
 	private int currentTime;
 	private int difficulty;
-	
+
 	public TyperManGame() throws FileNotFoundException {
-		setSize(400,400);
+		setSize(Constants.FULL_WIDTH, Constants.FULL_HIGHT);
 		setLayout(null);
-		bank = Dictionary.getWords("words.txt");
+		bank = ZhJpDictionary.getWords("words.txt");
 		setBackground(Color.WHITE);
 		currentString = new JTextField("");
 		currentString.addActionListener(new ActionListener () {
@@ -36,21 +38,21 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 			public void actionPerformed(ActionEvent arg0) {
 				sendString();
 			}
-			
+
 		});
-		currentString.setSize(400, 30);
-		currentString.setLocation(0, 342);
+		currentString.setSize(Constants.FULL_WIDTH, 30);
+		currentString.setLocation(0, Constants.FULL_HIGHT - 70);
 		currentString.setBackground(Color.BLUE);
 		currentString.setEditable(true);
 		currentString.setForeground(Color.white);
 		currentString.setFont(currentString.getFont().deriveFont(20f)); 
-		
+
 		pointBox = new JTextArea("");
 		pointBox.setEditable(false);
 		pointBox.setSize(60,30);
 		pointBox.setBackground(Color.BLACK);
 		pointBox.setForeground(Color.white);
-		pointBox.setLocation(150, 10);
+		pointBox.setLocation(0, 0);
 		
 		add(pointBox);
 		add(currentString);
@@ -77,12 +79,12 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 			updateUI();
 		}
 	}
-	
+
 	public boolean wordIsOnBoard(String entry) {
 		java.util.Iterator<FallingWord> it = wordsOnBoard.iterator();
 		while(it.hasNext()) {
 			FallingWord current = it.next();
-			if(current.equals(entry)) {
+			if(equalsAmbitious(current.getNormalizedSubWord(), entry)) {
 				return true;
 			}
 		}
@@ -94,12 +96,28 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		boolean found = false;
 		while(it.hasNext() && !found) {
 			FallingWord current = it.next();
-			if(current.equals(entry)) {
+			if(equalsAmbitious(current.getNormalizedSubWord(), entry)) {
 				remove(current.box);
 				it.remove();
 				found = true;
 			}
 		}
+	}
+	
+	private boolean equalsAmbitious(String answer, final String entry) {
+		// lower and remove spaces
+		final String a = answer.toLowerCase().replaceAll("[\\s　]", "");
+		final String b = entry.toLowerCase().replaceAll("[\\s　]", "");
+
+		// all match
+		if (a.equals(b)) {
+			return true;
+		}
+		// specific end char remove match
+		if (a.endsWith(".") || a.endsWith("?") || a.endsWith("!")) {
+			return a.substring(0, a.length()-1).equals(b);
+		}
+		return false;
 	}
 
 	@Override
@@ -125,7 +143,7 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 
 	private void makeNewWord() {
 		ZhJpWordItem randomWord = getRandomWord();
-		FallingWord newWord = new FallingWord(randomWord.getPinyin(), randomWord.getMean(), randomWord.getWord(), 3);
+		FallingWord newWord = new FallingWord(randomWord.getWord(), randomWord.getMean(), randomWord.getPinyin(), 3);
 		wordsOnBoard.add(newWord);
 	}
 
@@ -185,67 +203,65 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		private int boxVel;
 		private int xLoc;
 		private int yLoc;
-		
+
+		private static final int FALL_WORD_HIGHT = 50;
 		
 		public FallingWord(String word, String mean, String subWord, int boxVel) {
 			Random ran = new Random();
-			xLoc = ran.nextInt(300);
-			yLoc = 0;
 			this.word = word;
 			this.mean = mean;
 			this.subWord = subWord;
+			xLoc = ran.nextInt(Constants.FULL_WIDTH) - calcBoxWidth();
+			if (xLoc < 0) {
+				xLoc = 0;
+			}
+			yLoc = 0;
 			this.boxVel = boxVel;
 			createBox();
 		}
 		
 		public boolean atBottom() {
-			if(yLoc >=340) {
+			if (yLoc >= Constants.FULL_HIGHT - 60) {
 				return true;
 			} else {
 				return false;
 			}
 		}
+		
+		public String getNormalizedSubWord() {
+			return subWord
+					.replaceAll("[aāáǎà]", "a")
+					.replaceAll("[eēéěè]", "e")
+					.replaceAll("[iīíǐì]", "i")
+					.replaceAll("[oōóǒò]", "o")
+					.replaceAll("[uūúǔùüǖǘǚǜ]", "u");
+		}
 
-		@Override
-		public boolean equals(Object other) {
-			if(other instanceof String) {
-				String otherword = (String) other;
-				// TODO zhなので変換。別クラスに切り出す
-				otherword.replaceAll("[aāáǎà]", "a");
-				otherword.replaceAll("[eēéěè]", "e");
-				otherword.replaceAll("[iīíǐì]", "i");
-				otherword.replaceAll("[oōóǒò]", "o");
-				otherword.replaceAll("[uūúǔùüǖǘǚǜ]", "u");
-				otherword.replaceAll("[\\s\\S]", "");
-				return this.word.equals(otherword);
-			}
-			return false;
-		}
-		
-		@Override
-		public int hashCode() {
-			return word.hashCode();
-		}
-		
 		public void updateBox() {
 			yLoc = yLoc + boxVel;
 			box.setLocation(xLoc, yLoc);
-			if(yLoc>235) {
+			if (yLoc > Constants.HALF_HIGHT) {
 				box.setForeground(Color.white);
 				box.setBackground(Color.red);
-			} else if(yLoc>110) {
+			} else if (yLoc > Constants.QUARTER_HIGHT) {
 				box.setBackground(Color.yellow);
 			}
 		}
-		
+
 		public void createBox() {
 			box = new JTextArea(String.format("%s\n%s\n%s", word, subWord, mean));
 			box.setLocation(xLoc, yLoc);
-			box.setSize(8*word.length()+10, 30);
+			box.setSize(calcBoxWidth(), FALL_WORD_HIGHT);
 			box.setBackground(Color.GREEN);
 			add(box);
 		}
+
+		private int calcBoxWidth() {
+			final String maxLengthValue = Arrays.asList(word, subWord, mean).stream()
+					.max(Comparator.comparingInt(String::length)).get();
+			return 8 * maxLengthValue.length() + 10;
+		}
 	}
-	
+
 }
 

@@ -4,13 +4,13 @@ import java.io.FileNotFoundException;
 
 import javax.swing.JFrame;
 
-@SuppressWarnings("serial")
 public class TyperManPanel extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private TyperManGame game;
 	
 	public TyperManPanel() throws FileNotFoundException {
-		setSize(400,400);
+		setSize(Constants.FULL_WIDTH, Constants.FULL_HIGHT);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
