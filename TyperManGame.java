@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -260,9 +261,9 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		}
 
 		private int calcBoxWidth() {
-			final String maxLengthValue = Arrays.asList(word, subWord, mean).stream()
-					.max(Comparator.comparingInt(String::length)).get();
-			return 8 * maxLengthValue.length() + 10;
+			final int meanCustomLength = mean.length() * 2;
+			final int maxLengthValue = IntStream.of(word.length(), subWord.length(), meanCustomLength).max().getAsInt();
+			return 8 * maxLengthValue;
 		}
 	}
 
