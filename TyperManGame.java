@@ -25,9 +25,13 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 	private Timer time;
 	private int currentTime;
 	private int difficulty;
+	/**
+	 * current string height
+	 */
+	private static final int CS_HEIGHT = 30;
 
 	public TyperManGame() throws FileNotFoundException {
-		setSize(Constants.FULL_WIDTH, Constants.FULL_HIGHT);
+		setSize(Constants.FULL_WIDTH, Constants.FULL_HEIGHT);
 		setLayout(null);
 		bank = ZhJpDictionary.getWords("words.txt");
 		setBackground(Color.WHITE);
@@ -40,8 +44,8 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 			}
 
 		});
-		currentString.setSize(Constants.FULL_WIDTH, 30);
-		currentString.setLocation(0, Constants.FULL_HIGHT - 70);
+		currentString.setSize(Constants.FULL_WIDTH, CS_HEIGHT);
+		currentString.setLocation(0, Constants.FULL_HEIGHT - 70);
 		currentString.setBackground(Color.BLUE);
 		currentString.setEditable(true);
 		currentString.setForeground(Color.white);
@@ -71,8 +75,8 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 	
 	public void sendString() {
 		String entry = currentString.getText();
-		currentString.setText("");
 		if(wordIsOnBoard(entry)) {
+			currentString.setText("");
 			points = points + entry.length() + difficulty;
 			pointBox.setText(""+points);
 			removeWord(entry);
@@ -96,11 +100,9 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		boolean found = false;
 		while(it.hasNext() && !found) {
 			FallingWord current = it.next();
-			if(equalsAmbitious(current.getNormalizedSubWord(), entry)) {
-				remove(current.box);
-				it.remove();
-				found = true;
-			}
+			remove(current.box);
+			it.remove();
+			found = true;
 		}
 	}
 	
@@ -204,7 +206,7 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		private int xLoc;
 		private int yLoc;
 
-		private static final int FALL_WORD_HIGHT = 50;
+		private static final int FALL_WORD_HEIGHT = 50;
 		
 		public FallingWord(String word, String mean, String subWord, int boxVel) {
 			Random ran = new Random();
@@ -221,7 +223,8 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		}
 		
 		public boolean atBottom() {
-			if (yLoc >= Constants.FULL_HIGHT - 60) {
+			// height: end of time, look for miss word
+			if (yLoc >= Constants.FULL_HEIGHT - FALL_WORD_HEIGHT * 2 - CS_HEIGHT) {
 				return true;
 			} else {
 				return false;
@@ -240,10 +243,10 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		public void updateBox() {
 			yLoc = yLoc + boxVel;
 			box.setLocation(xLoc, yLoc);
-			if (yLoc > Constants.HALF_HIGHT) {
+			if (yLoc > Constants.HALF_HEIGHT) {
 				box.setForeground(Color.white);
 				box.setBackground(Color.red);
-			} else if (yLoc > Constants.QUARTER_HIGHT) {
+			} else if (yLoc > Constants.QUARTER_HEIGHT) {
 				box.setBackground(Color.yellow);
 			}
 		}
@@ -251,7 +254,7 @@ public class TyperManGame extends JPanel implements KeyListener, ActionListener 
 		public void createBox() {
 			box = new JTextArea(String.format("%s\n%s\n%s", word, subWord, mean));
 			box.setLocation(xLoc, yLoc);
-			box.setSize(calcBoxWidth(), FALL_WORD_HIGHT);
+			box.setSize(calcBoxWidth(), FALL_WORD_HEIGHT);
 			box.setBackground(Color.GREEN);
 			add(box);
 		}

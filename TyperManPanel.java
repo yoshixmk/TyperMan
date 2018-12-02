@@ -10,7 +10,7 @@ public class TyperManPanel extends JFrame {
 	private TyperManGame game;
 	
 	public TyperManPanel() throws FileNotFoundException {
-		setSize(Constants.FULL_WIDTH, Constants.FULL_HIGHT);
+		setSize(Constants.FULL_WIDTH, Constants.FULL_HEIGHT);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
